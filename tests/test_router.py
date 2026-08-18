@@ -1857,6 +1857,9 @@ class TestCompleteRun:
             data["error_detail"]
             == "RuntimeError: script crashed [kind=unknown, source=environment]"
         )
+        assert data["status_detail"]["phase"] == "callback"
+        assert data["status_detail"]["kind"] == "unknown"
+        assert data["status_detail"]["source"] == "environment"
 
         await async_session.refresh(run)
         assert run.status == AutomationRunStatus.FAILED
@@ -1864,6 +1867,9 @@ class TestCompleteRun:
             run.error_detail
             == "RuntimeError: script crashed [kind=unknown, source=environment]"
         )
+        assert run.status_detail is not None
+        assert run.status_detail["phase"] == "callback"
+        assert run.status_detail["kind"] == "unknown"
 
     async def test_complete_run_default_keep_alive_null_cleans_up_sandbox(
         self, async_client, async_session
